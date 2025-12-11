@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Despedida Terceirão 2025 - Técnico em Informática</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700;800&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+</head>
+
+<body>
+
+    <!-- Floating Particles Background -->
+    <div class="particles" id="particles"></div>
+
+    <!-- Hero Section -->
+    <header class="hero">
+        <div class="hero-content">
+            <span class="badge animate-up delay-1"><i class="fa-solid fa-code"></i> Curso Técnico de Informática</span>
+            <h1 class="animate-up delay-2">Despedida do<br><span class="gradient-text">Terceirão 2025</span></h1>
+            <p class="subtitle animate-up delay-3">Três anos de código, amizades e memórias que ficarão para sempre.</p>
+            <a href="#gallery-section" class="cta-button animate-up delay-4">
+                <i class="fa-solid fa-images"></i> Ver Galeria <i class="fa-solid fa-chevron-down arrow-bounce"></i>
+            </a>
+
+            <!-- Music Player -->
+            <div class="music-player animate-up delay-4">
+                <button class="music-toggle" id="music-toggle" aria-label="Tocar música">
+                    <i class="fa-solid fa-play"></i>
+                </button>
+                <div class="music-info">
+                    <span class="music-label">🎵 Música da Turma</span>
+                    <div class="music-progress">
+                        <div class="music-progress-bar" id="music-progress-bar"></div>
+                    </div>
+                </div>
+                <audio id="background-music" src="musica.mp3" loop></audio>
+            </div>
+        </div>
+    </header>
+
+    <!-- Stats Section -->
+    <section class="stats-section">
+        <div class="container">
+            <div class="stats-container">
+                <div class="stat-card">
+                    <div class="stat-icon-wrapper">
+                        <i class="fa-solid fa-camera stat-icon"></i>
+                    </div>
+                    <h3 class="stat-number" id="photo-count">0</h3>
+                    <p class="stat-label">Fotos</p>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon-wrapper">
+                        <i class="fa-solid fa-video stat-icon"></i>
+                    </div>
+                    <h3 class="stat-number" id="video-count">0</h3>
+                    <p class="stat-label">Vídeos</p>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon-wrapper">
+                        <i class="fa-solid fa-heart stat-icon"></i>
+                    </div>
+                    <h3 class="stat-number" id="memory-count">0</h3>
+                    <p class="stat-label">Memórias</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Featured Carousel Section -->
+    <section class="carousel-section">
+        <div class="container">
+            <div class="section-header">
+                <h2 class="section-title"><i class="fa-solid fa-star"></i> Momentos em Destaque</h2>
+                <p class="section-subtitle">As melhores memórias da nossa jornada</p>
+            </div>
+            <div class="carousel-wrapper">
+                <button class="carousel-btn carousel-prev" id="carousel-prev">
+                    <i class="fa-solid fa-chevron-left"></i>
+                </button>
+                <div class="carousel-container" id="carousel-container">
+                    <div class="carousel-track" id="carousel-track">
+                        <!-- Carousel items will be injected by JS -->
+                    </div>
+                </div>
+                <button class="carousel-btn carousel-next" id="carousel-next">
+                    <i class="fa-solid fa-chevron-right"></i>
+                </button>
+            </div>
+            <div class="carousel-dots" id="carousel-dots">
+                <!-- Dots will be injected by JS -->
+            </div>
+        </div>
+    </section>
+
+    <!-- Gallery Section -->
+    <section id="gallery-section" class="gallery-section">
+        <div class="container">
+            <div class="section-header">
+                <h2 class="section-title"><i class="fa-solid fa-photo-film"></i> Galeria da Turma</h2>
+                <p class="section-subtitle">Momentos que marcaram nossa jornada</p>
+            </div>
+            <div class="filters">
+                <button class="filter-btn active" data-filter="all">
+                    <i class="fa-solid fa-layer-group"></i> Todos
+                </button>
+                <button class="filter-btn" data-filter="photo">
+                    <i class="fa-solid fa-image"></i> Fotos
+                </button>
+                <button class="filter-btn" data-filter="video">
+                    <i class="fa-solid fa-film"></i> Vídeos
+                </button>
+            </div>
+            <div class="gallery-grid" id="gallery-grid">
+                <!-- Items will be injected here via JS -->
+            </div>
+        </div>
+    </section>
+
+    <!-- Messages Section -->
+    <section class="messages-section">
+        <div class="container">
+            <div class="section-header">
+                <h2 class="section-title"><i class="fa-solid fa-quote-left"></i> Mensagens para a Turma</h2>
+                <p class="section-subtitle">4302 - A melhor turma do IFPI</p>
+            </div>
+            <div class="messages-grid">
+                <div class="message-card">
+                    <div class="message-icon">
+                        <i class="fa-solid fa-graduation-cap"></i>
+                    </div>
+                    <p class="message-text">"Três anos se passaram como um piscar de olhos. Entramos como desconhecidos
+                        e saímos como uma família. Obrigado por cada momento!"</p>
+                    <span class="message-author">A Turma de 2025</span>
+                </div>
+                <div class="message-card">
+                    <div class="message-icon">
+                        <i class="fa-solid fa-rocket"></i>
+                    </div>
+                    <p class="message-text">"Não é um adeus, é um até logo! Que nossos caminhos se cruzem novamente e
+                        que o sucesso seja a marca de cada um de nós."</p>
+                    <span class="message-author">Para o futuro</span>
+                </div>
+                <div class="message-card featured">
+                    <div class="message-icon">
+                        <i class="fa-solid fa-code"></i>
+                    </div>
+                    <p class="message-text">"// TODO: Nunca esquecer esses momentos<br>// FIXME: A saudade que vai
+                        bater<br>// return 'Obrigado por tudo! 💻🧡'"</p>
+                    <span class="message-author">Em código</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Lightbox Modal -->
+    <div id="lightbox" class="lightbox">
+        <button class="close-lightbox" aria-label="Fechar"><i class="fa-solid fa-xmark"></i></button>
+        <button class="nav-btn prev-btn" aria-label="Anterior"><i class="fa-solid fa-chevron-left"></i></button>
+        <div class="lightbox-content">
+            <img id="lightbox-img" src="" alt="Zoom" class="hidden">
+            <video id="lightbox-video" controls class="hidden"></video>
+        </div>
+        <button class="nav-btn next-btn" aria-label="Próximo"><i class="fa-solid fa-chevron-right"></i></button>
+    </div>
+
+    <!-- Footer -->
+    <footer>
+        <div class="footer-content">
+            <p><i class="fa-solid fa-code"></i> Desenvolvido com <span class="heart">🧡</span> pela Turma de Informática
+                2025</p>
+            <p class="footer-sub">Memórias que nunca serão deletadas</p>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+
+</html>
