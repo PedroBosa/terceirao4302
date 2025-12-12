@@ -1,3 +1,67 @@
+// =========================================================================
+// LOADING SCREEN
+// =========================================================================
+const loadingMessages = [
+    { text: '🚀 Inicializando sistema...', progress: 5 },
+    { text: '🎓 Carregando a melhor turma...', progress: 15 },
+    { text: '💻 Importando dados dos protagonistas...', progress: 25 },
+    { text: '📸 Preparando memórias inesquecíveis...', progress: 40 },
+    { text: '☕ Medindo níveis de café consumido...', progress: 50 },
+    { text: '🔥 Compilando momentos épicos...', progress: 60 },
+    { text: '🎵 Sincronizando trilha sonora...', progress: 70 },
+    { text: '✨ Aplicando magia de formatura...', progress: 80 },
+    { text: '🎉 Preparando confetes virtuais...', progress: 90 },
+    { text: '🧡 Finalizando com muito carinho...', progress: 100 }
+];
+
+let loadingIndex = 0;
+const loadingScreen = document.getElementById('loading-screen');
+const loadingBar = document.getElementById('loading-bar');
+const loadingText = document.getElementById('loading-text');
+
+function runLoading() {
+    if (loadingIndex < loadingMessages.length) {
+        const msg = loadingMessages[loadingIndex];
+        loadingText.textContent = msg.text;
+        loadingBar.style.width = msg.progress + '%';
+        loadingIndex++;
+        setTimeout(runLoading, 1200);
+    } else {
+        setTimeout(() => {
+            loadingScreen.classList.add('hidden');
+            document.body.style.overflow = 'auto';
+        }, 500);
+    }
+}
+
+// Preload images in background during loading screen
+function preloadImages() {
+    const imagesToPreload = [
+        '366117c6-c70f-44ff-be6d-7489996cd1bb.jpg',
+        '1e4b3f09-adbd-4d87-a8b6-5a9bf1ab57ac.JPG',
+        '1e59db2d-167e-4ae7-86b5-bd93754cabae.jpg',
+        '5e1e2f03-acbe-4492-b622-6cc9d0a3d5b1.jpg',
+        'IMG_0518_Original.jpg',
+        'IMG-20241213-WA0011_Original.jpg',
+        '0345a02b-e82f-45cf-a080-737574244e92.jpg',
+        '07dc98c0-ff54-4eb8-b064-bcdde4d04704.jpg',
+        '0821d250-7778-4bd8-a135-00bc808e7d94.JPG',
+        '09ab86ff-7f07-44d0-a7eb-503e94a7bcbd.JPG'
+    ];
+
+    imagesToPreload.forEach(filename => {
+        const img = new Image();
+        img.src = `memories/${filename}`;
+    });
+}
+
+// Start loading animation and preload images
+if (loadingScreen) {
+    document.body.style.overflow = 'hidden';
+    preloadImages(); // Start preloading images in background
+    setTimeout(runLoading, 300);
+}
+
 document.addEventListener('DOMContentLoaded', () => {
 
     // =========================================================================
@@ -300,13 +364,28 @@ document.addEventListener('DOMContentLoaded', () => {
         }, 16);
     }
 
+    // Pagination state
+    const ITEMS_PER_PAGE = 20;
+    let currentPage = 0;
+
+    // Pagination elements
+    const prevPageBtn = document.getElementById('prev-page');
+    const nextPageBtn = document.getElementById('next-page');
+    const paginationInfo = document.getElementById('pagination-info');
+
     function renderGallery() {
         galleryGrid.innerHTML = '';
         const filteredMedia = state.media.filter(item =>
             state.filter === 'all' || item.type === state.filter
         );
 
-        filteredMedia.forEach((item) => {
+        // Calculate pagination
+        const totalPages = Math.ceil(filteredMedia.length / ITEMS_PER_PAGE);
+        const startIndex = currentPage * ITEMS_PER_PAGE;
+        const endIndex = Math.min(startIndex + ITEMS_PER_PAGE, filteredMedia.length);
+        const pageItems = filteredMedia.slice(startIndex, endIndex);
+
+        pageItems.forEach((item) => {
             const el = document.createElement('div');
             el.className = 'gallery-item';
 
@@ -327,6 +406,42 @@ document.addEventListener('DOMContentLoaded', () => {
             el.onclick = () => openLightbox(el.dataset.index);
             galleryGrid.appendChild(el);
         });
+
+        // Update pagination UI
+        updatePaginationUI(totalPages);
+    }
+
+    function updatePaginationUI(totalPages) {
+        if (paginationInfo) {
+            paginationInfo.textContent = `Página ${currentPage + 1} de ${totalPages}`;
+        }
+        if (prevPageBtn) {
+            prevPageBtn.disabled = currentPage === 0;
+        }
+        if (nextPageBtn) {
+            nextPageBtn.disabled = currentPage >= totalPages - 1;
+        }
+    }
+
+    function goToNextPage() {
+        currentPage++;
+        renderGallery();
+        // Scroll to gallery section
+        document.querySelector('.gallery-section')?.scrollIntoView({ behavior: 'smooth' });
+    }
+
+    function goToPrevPage() {
+        currentPage--;
+        renderGallery();
+        document.querySelector('.gallery-section')?.scrollIntoView({ behavior: 'smooth' });
+    }
+
+    // Pagination event listeners
+    if (prevPageBtn) {
+        prevPageBtn.onclick = goToPrevPage;
+    }
+    if (nextPageBtn) {
+        nextPageBtn.onclick = goToNextPage;
     }
 
     // --- Event Listeners ---
@@ -337,6 +452,7 @@ document.addEventListener('DOMContentLoaded', () => {
             filterBtns.forEach(b => b.classList.remove('active'));
             btn.classList.add('active');
             state.filter = btn.dataset.filter;
+            currentPage = 0; // Reset to first page when filter changes
             renderGallery();
         };
     });
@@ -527,10 +643,917 @@ document.addEventListener('DOMContentLoaded', () => {
         updateCarousel();
     });
 
+    // =========================================================================
+    // PARTY MODE - FESTA DE FORMATURA
+    // =========================================================================
+    const partyModeBtn = document.getElementById('party-mode-btn');
+    const confettiContainer = document.getElementById('confetti-container');
+    const fireworksContainer = document.getElementById('fireworks-container');
+
+    let partyModeActive = false;
+    let confettiInterval = null;
+    let fireworksInterval = null;
+
+    const confettiColors = [
+        '#ff6b35', '#ff8c00', '#ffd93d', '#ff35a0',
+        '#6b35ff', '#35ff6b', '#35a0ff', '#ff3535'
+    ];
+
+    function createConfetti() {
+        if (!confettiContainer) return;
+
+        const confetti = document.createElement('div');
+        const shapes = ['circle', 'square', 'ribbon'];
+        const shape = shapes[Math.floor(Math.random() * shapes.length)];
+
+        confetti.className = `confetti ${shape}`;
+        confetti.style.left = Math.random() * 100 + '%';
+        confetti.style.backgroundColor = confettiColors[Math.floor(Math.random() * confettiColors.length)];
+        confetti.style.animationDuration = (Math.random() * 2 + 2) + 's';
+        confetti.style.animationDelay = Math.random() * 0.5 + 's';
+
+        if (shape === 'ribbon') {
+            confetti.style.width = (Math.random() * 6 + 6) + 'px';
+            confetti.style.height = (Math.random() * 15 + 15) + 'px';
+        } else {
+            const size = Math.random() * 10 + 8;
+            confetti.style.width = size + 'px';
+            confetti.style.height = size + 'px';
+        }
+
+        confettiContainer.appendChild(confetti);
+
+        // Remove after animation
+        setTimeout(() => confetti.remove(), 4000);
+    }
+
+    function createFirework() {
+        if (!fireworksContainer) return;
+
+        const x = Math.random() * 80 + 10; // 10% to 90% of screen width
+        const y = Math.random() * 40 + 10; // 10% to 50% of screen height
+        const color = confettiColors[Math.floor(Math.random() * confettiColors.length)];
+
+        // Create launch trail
+        const firework = document.createElement('div');
+        firework.className = 'firework';
+        firework.style.left = x + '%';
+        firework.style.bottom = '0';
+        firework.style.backgroundColor = color;
+        firework.style.color = color;
+
+        fireworksContainer.appendChild(firework);
+
+        // Create explosion after launch
+        setTimeout(() => {
+            firework.remove();
+            createExplosion(x, y, color);
+        }, 800);
+    }
+
+    function createExplosion(x, y, color) {
+        const particleCount = 20 + Math.floor(Math.random() * 15);
+
+        for (let i = 0; i < particleCount; i++) {
+            const particle = document.createElement('div');
+            particle.className = 'firework-particle';
+            particle.style.left = x + '%';
+            particle.style.top = y + '%';
+            particle.style.backgroundColor = color;
+            particle.style.boxShadow = `0 0 6px ${color}, 0 0 12px ${color}`;
+
+            // Random direction
+            const angle = (Math.PI * 2 * i) / particleCount + (Math.random() - 0.5) * 0.5;
+            const distance = 80 + Math.random() * 80;
+            const tx = Math.cos(angle) * distance + 'px';
+            const ty = Math.sin(angle) * distance + 'px';
+
+            particle.style.setProperty('--tx', tx);
+            particle.style.setProperty('--ty', ty);
+
+            fireworksContainer.appendChild(particle);
+
+            setTimeout(() => particle.remove(), 1500);
+        }
+    }
+
+    function startPartyMode() {
+        partyModeActive = true;
+        partyModeBtn.classList.add('active');
+
+        // Start confetti
+        confettiInterval = setInterval(() => {
+            for (let i = 0; i < 3; i++) {
+                createConfetti();
+            }
+        }, 100);
+
+        // Start fireworks
+        fireworksInterval = setInterval(createFirework, 800);
+
+        // Initial burst
+        for (let i = 0; i < 30; i++) {
+            setTimeout(() => createConfetti(), i * 50);
+        }
+        for (let i = 0; i < 3; i++) {
+            setTimeout(() => createFirework(), i * 300);
+        }
+    }
+
+    function stopPartyMode() {
+        partyModeActive = false;
+        partyModeBtn.classList.remove('active');
+
+        if (confettiInterval) {
+            clearInterval(confettiInterval);
+            confettiInterval = null;
+        }
+        if (fireworksInterval) {
+            clearInterval(fireworksInterval);
+            fireworksInterval = null;
+        }
+    }
+
+    if (partyModeBtn) {
+        partyModeBtn.onclick = () => {
+            if (partyModeActive) {
+                stopPartyMode();
+            } else {
+                startPartyMode();
+            }
+        };
+    }
+
+    // =========================================================================
+    // SHARE FUNCTIONALITY
+    // =========================================================================
+    const shareBtn = document.getElementById('share-btn');
+    const shareModal = document.getElementById('share-modal');
+    const shareModalClose = document.getElementById('share-modal-close');
+    const printModal = document.getElementById('print-modal');
+    const printModalClose = document.getElementById('print-modal-close');
+    const printCardModal = document.getElementById('print-card-modal');
+    const printCardClose = document.getElementById('print-card-close');
+    const printGallery = document.getElementById('print-gallery');
+    const printCardPhoto = document.getElementById('print-card-photo');
+
+    // Site URL (update this when deploying)
+    const siteUrl = window.location.href;
+    const shareText = '🎓 Confira a página de despedida do Terceirão 2025 - Técnico em Informática! Memórias que nunca serão deletadas! 💻🧡';
+
+    // Open/Close Share Modal
+    if (shareBtn) {
+        shareBtn.onclick = () => {
+            shareModal.classList.add('active');
+            document.body.style.overflow = 'hidden';
+        };
+    }
+
+    if (shareModalClose) {
+        shareModalClose.onclick = () => {
+            shareModal.classList.remove('active');
+            document.body.style.overflow = 'auto';
+        };
+    }
+
+    // Social Share Buttons
+    document.getElementById('share-whatsapp')?.addEventListener('click', () => {
+        const url = `https://api.whatsapp.com/send?text=${encodeURIComponent(shareText + ' ' + siteUrl)}`;
+        window.open(url, '_blank');
+    });
+
+    document.getElementById('share-instagram')?.addEventListener('click', () => {
+        // Instagram doesn't have direct share API, copy link instead
+        navigator.clipboard.writeText(siteUrl).then(() => {
+            alert('Link copiado! Cole no Instagram Stories ou no seu perfil. 📸');
+        });
+    });
+
+    document.getElementById('share-twitter')?.addEventListener('click', () => {
+        const url = `https://twitter.com/intent/tweet?text=${encodeURIComponent(shareText)}&url=${encodeURIComponent(siteUrl)}`;
+        window.open(url, '_blank');
+    });
+
+    document.getElementById('share-facebook')?.addEventListener('click', () => {
+        const url = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(siteUrl)}`;
+        window.open(url, '_blank');
+    });
+
+    document.getElementById('share-copy')?.addEventListener('click', () => {
+        navigator.clipboard.writeText(siteUrl).then(() => {
+            const btn = document.getElementById('share-copy');
+            btn.innerHTML = '<i class="fa-solid fa-check"></i><span>Link Copiado!</span>';
+            setTimeout(() => {
+                btn.innerHTML = '<i class="fa-solid fa-link"></i><span>Copiar Link</span>';
+            }, 2000);
+        });
+    });
+
+    // =========================================================================
+    // PRINT PERSONALIZED
+    // =========================================================================
+    document.getElementById('generate-print-btn')?.addEventListener('click', () => {
+        shareModal.classList.remove('active');
+        printModal.classList.add('active');
+
+        // Populate gallery with photos
+        if (printGallery) {
+            printGallery.innerHTML = '';
+            // Show ALL photos, not just 24
+            const photos = state.media.filter(m => m.type === 'photo');
+
+            photos.forEach((photo, index) => {
+                const item = document.createElement('div');
+                item.className = 'print-gallery-item';
+                item.innerHTML = `<img src="${photo.src}" alt="Foto ${index + 1}" loading="lazy">`;
+                item.onclick = () => selectPhotoForPrint(photo.src);
+                printGallery.appendChild(item);
+            });
+        }
+    });
+
+    if (printModalClose) {
+        printModalClose.onclick = () => {
+            printModal.classList.remove('active');
+            document.body.style.overflow = 'auto';
+        };
+    }
+
+    if (printCardClose) {
+        printCardClose.onclick = () => {
+            printCardModal.classList.remove('active');
+            document.body.style.overflow = 'auto';
+        };
+    }
+
+    function selectPhotoForPrint(src) {
+        printModal.classList.remove('active');
+        printCardModal.classList.add('active');
+
+        const img = printCardPhoto.querySelector('img');
+        if (img) {
+            img.src = src;
+        }
+    }
+
+    // Download Print - Instagram Story Format (1080x1920)
+    document.getElementById('download-print-btn')?.addEventListener('click', () => {
+        const canvas = document.getElementById('print-canvas');
+        // Instagram Story size: 1080x1920 (9:16 aspect ratio)
+        canvas.width = 1080;
+        canvas.height = 1920;
+        const ctx = canvas.getContext('2d');
+        const img = printCardPhoto.querySelector('img');
+
+        if (!img || !img.src) return;
+
+        // Draw print card on canvas
+        const tempImg = new Image();
+        tempImg.crossOrigin = 'anonymous';
+        tempImg.onload = () => {
+            const w = 1080;
+            const h = 1920;
+
+            // Background gradient
+            const bgGradient = ctx.createLinearGradient(0, 0, w, h);
+            bgGradient.addColorStop(0, '#0f0c29');
+            bgGradient.addColorStop(0.5, '#302b63');
+            bgGradient.addColorStop(1, '#24243e');
+            ctx.fillStyle = bgGradient;
+            ctx.fillRect(0, 0, w, h);
+
+            // Decorative circles in background
+            ctx.globalAlpha = 0.1;
+            ctx.fillStyle = '#ff8c00';
+            ctx.beginPath();
+            ctx.arc(-100, 300, 400, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.beginPath();
+            ctx.arc(w + 100, h - 400, 500, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.globalAlpha = 1;
+
+            // Header section with gradient
+            const headerGradient = ctx.createLinearGradient(0, 0, w, 320);
+            headerGradient.addColorStop(0, '#ff6b35');
+            headerGradient.addColorStop(0.5, '#ff8c00');
+            headerGradient.addColorStop(1, '#ffd93d');
+            ctx.fillStyle = headerGradient;
+
+            // Rounded header
+            ctx.beginPath();
+            ctx.moveTo(0, 0);
+            ctx.lineTo(w, 0);
+            ctx.lineTo(w, 280);
+            ctx.quadraticCurveTo(w / 2, 350, 0, 280);
+            ctx.closePath();
+            ctx.fill();
+
+            // Course badge
+            ctx.fillStyle = 'rgba(255,255,255,0.25)';
+            roundRect(ctx, w / 2 - 180, 60, 360, 50, 25);
+            ctx.fill();
+
+            ctx.fillStyle = 'white';
+            ctx.font = 'bold 24px Poppins, sans-serif';
+            ctx.textAlign = 'center';
+            ctx.fillText('💻 Técnico em Informática', w / 2, 95);
+
+            // Main title
+            ctx.font = 'bold 72px Poppins, sans-serif';
+            ctx.fillStyle = 'white';
+            ctx.shadowColor = 'rgba(0,0,0,0.3)';
+            ctx.shadowBlur = 10;
+            ctx.shadowOffsetY = 4;
+            ctx.fillText('TERCEIRÃO', w / 2, 190);
+            ctx.fillText('2025', w / 2, 270);
+            ctx.shadowBlur = 0;
+            ctx.shadowOffsetY = 0;
+
+            // Photo frame with glow effect
+            const photoX = 60;
+            const photoY = 380;
+            const photoW = w - 120;
+            const photoH = 900;
+
+            // Outer glow
+            ctx.shadowColor = '#ff8c00';
+            ctx.shadowBlur = 40;
+            ctx.fillStyle = '#ff8c00';
+            roundRect(ctx, photoX - 5, photoY - 5, photoW + 10, photoH + 10, 30);
+            ctx.fill();
+            ctx.shadowBlur = 0;
+
+            // Photo border
+            ctx.fillStyle = 'white';
+            roundRect(ctx, photoX - 8, photoY - 8, photoW + 16, photoH + 16, 28);
+            ctx.fill();
+
+            // Clip and draw photo
+            ctx.save();
+            ctx.beginPath();
+            roundRect(ctx, photoX, photoY, photoW, photoH, 24);
+            ctx.clip();
+
+            // Calculate aspect ratio to cover the area
+            const imgRatio = tempImg.width / tempImg.height;
+            const frameRatio = photoW / photoH;
+            let drawW, drawH, drawX, drawY;
+
+            if (imgRatio > frameRatio) {
+                drawH = photoH;
+                drawW = drawH * imgRatio;
+                drawX = photoX - (drawW - photoW) / 2;
+                drawY = photoY;
+            } else {
+                drawW = photoW;
+                drawH = drawW / imgRatio;
+                drawX = photoX;
+                drawY = photoY - (drawH - photoH) / 2;
+            }
+
+            ctx.drawImage(tempImg, drawX, drawY, drawW, drawH);
+            ctx.restore();
+
+            // Footer section
+            const footerY = 1340;
+
+            // Decorative line
+            const lineGradient = ctx.createLinearGradient(100, 0, w - 100, 0);
+            lineGradient.addColorStop(0, 'transparent');
+            lineGradient.addColorStop(0.5, '#ff8c00');
+            lineGradient.addColorStop(1, 'transparent');
+            ctx.strokeStyle = lineGradient;
+            ctx.lineWidth = 3;
+            ctx.beginPath();
+            ctx.moveTo(100, footerY);
+            ctx.lineTo(w - 100, footerY);
+            ctx.stroke();
+
+            // Quote
+            ctx.fillStyle = 'rgba(255,255,255,0.9)';
+            ctx.font = 'italic 32px Poppins, sans-serif';
+            ctx.textAlign = 'center';
+            ctx.fillText('"Memórias que nunca', w / 2, footerY + 70);
+            ctx.fillText('serão deletadas"', w / 2, footerY + 115);
+
+            // Emoji decoration
+            ctx.font = '40px sans-serif';
+            ctx.fillText('🎓', w / 2 - 200, footerY + 92);
+            ctx.fillText('💻', w / 2 + 200, footerY + 92);
+
+            // Class info
+            ctx.fillStyle = '#ff8c00';
+            ctx.font = 'bold 36px Poppins, sans-serif';
+            ctx.fillText('Turma 4302', w / 2, footerY + 190);
+
+            ctx.fillStyle = 'rgba(255,255,255,0.7)';
+            ctx.font = '28px Poppins, sans-serif';
+            ctx.fillText('IFPI • 2023 - 2025', w / 2, footerY + 240);
+
+            // Heart emoji at bottom
+            ctx.font = '50px sans-serif';
+            ctx.fillText('🧡', w / 2, footerY + 320);
+
+            // Watermark
+            ctx.fillStyle = 'rgba(255,255,255,0.3)';
+            ctx.font = '18px Poppins, sans-serif';
+            ctx.fillText('despedida-terceirao-2025', w / 2, h - 40);
+
+            // Download
+            const link = document.createElement('a');
+            link.download = 'story-terceirao-2025.png';
+            link.href = canvas.toDataURL('image/png');
+            link.click();
+        };
+        tempImg.src = img.src;
+    });
+
+    // =========================================================================
+    // CERTIFICATE GENERATION
+    // =========================================================================
+    document.getElementById('download-certificate-btn')?.addEventListener('click', () => {
+        const nameInput = document.getElementById('certificate-name');
+        const name = nameInput?.value.trim();
+
+        if (!name) {
+            nameInput.style.borderColor = '#ff3535';
+            nameInput.placeholder = '⚠️ Por favor, digite seu nome!';
+            setTimeout(() => {
+                nameInput.style.borderColor = 'rgba(255, 255, 255, 0.2)';
+                nameInput.placeholder = 'Digite seu nome completo';
+            }, 2000);
+            return;
+        }
+
+        generateCertificate(name);
+    });
+
+    function generateCertificate(name) {
+        const canvas = document.getElementById('certificate-canvas');
+        const ctx = canvas.getContext('2d');
+
+        // Background gradient
+        const gradient = ctx.createLinearGradient(0, 0, 1200, 850);
+        gradient.addColorStop(0, '#1a1a2e');
+        gradient.addColorStop(0.5, '#16213e');
+        gradient.addColorStop(1, '#0f3460');
+        ctx.fillStyle = gradient;
+        ctx.fillRect(0, 0, 1200, 850);
+
+        // Border
+        ctx.strokeStyle = '#ff8c00';
+        ctx.lineWidth = 8;
+        ctx.strokeRect(30, 30, 1140, 790);
+
+        // Inner border
+        ctx.strokeStyle = 'rgba(255, 140, 0, 0.3)';
+        ctx.lineWidth = 2;
+        ctx.strokeRect(50, 50, 1100, 750);
+
+        // Corner decorations
+        const cornerSize = 40;
+        ctx.fillStyle = '#ff8c00';
+        // Top left
+        ctx.fillRect(30, 30, cornerSize, 8);
+        ctx.fillRect(30, 30, 8, cornerSize);
+        // Top right
+        ctx.fillRect(1170 - cornerSize, 30, cornerSize, 8);
+        ctx.fillRect(1162, 30, 8, cornerSize);
+        // Bottom left
+        ctx.fillRect(30, 812, cornerSize, 8);
+        ctx.fillRect(30, 820 - cornerSize, 8, cornerSize);
+        // Bottom right
+        ctx.fillRect(1170 - cornerSize, 812, cornerSize, 8);
+        ctx.fillRect(1162, 820 - cornerSize, 8, cornerSize);
+
+        // Title Badge
+        ctx.fillStyle = 'rgba(255, 140, 0, 0.2)';
+        roundRect(ctx, 350, 80, 500, 50, 25);
+        ctx.fill();
+
+        ctx.fillStyle = '#ff8c00';
+        ctx.font = '600 20px Poppins, sans-serif';
+        ctx.textAlign = 'center';
+        ctx.fillText('🎓 CERTIFICADO DE MÉRITO 🎓', 600, 115);
+
+        // Main Title
+        ctx.fillStyle = 'white';
+        ctx.font = 'bold 48px Poppins, sans-serif';
+        ctx.fillText('SOBREVIVI AO TÉCNICO', 600, 200);
+        ctx.fillText('DE INFORMÁTICA 2025', 600, 260);
+
+        // Subtitle
+        ctx.fillStyle = 'rgba(255, 255, 255, 0.7)';
+        ctx.font = '24px Poppins, sans-serif';
+        ctx.fillText('Este certificado é orgulhosamente concedido a', 600, 330);
+
+        // Name
+        ctx.fillStyle = '#ffd93d';
+        ctx.font = 'bold 44px Poppins, sans-serif';
+        ctx.fillText(name.toUpperCase(), 600, 400);
+
+        // Underline for name
+        const nameWidth = ctx.measureText(name.toUpperCase()).width;
+        ctx.strokeStyle = '#ff8c00';
+        ctx.lineWidth = 3;
+        ctx.beginPath();
+        ctx.moveTo(600 - nameWidth / 2 - 20, 420);
+        ctx.lineTo(600 + nameWidth / 2 + 20, 420);
+        ctx.stroke();
+
+        // Description
+        ctx.fillStyle = 'rgba(255, 255, 255, 0.9)';
+        ctx.font = '20px Poppins, sans-serif';
+        ctx.fillText('Por ter demonstrado extraordinária resiliência, criatividade', 600, 480);
+        ctx.fillText('e dedicação durante os 3 anos do Curso Técnico em Informática', 600, 510);
+        ctx.fillText('no IFPI, superando desafios épicos como:', 600, 540);
+
+        // Achievements - CENTERED
+        ctx.textAlign = 'center';
+        ctx.fillStyle = '#ff8c00';
+        ctx.font = '18px Poppins, sans-serif';
+        const achievements = [
+            '💻 Debugar código às 23:59 antes da entrega',
+            '☕ Consumir quantidades heroicas de café',
+            '🔥 Sobreviver a provas de lógica impossíveis',
+            '🎯 Nunca desistir, mesmo quando o código não compilava'
+        ];
+
+        let achY = 590;
+        achievements.forEach(ach => {
+            ctx.fillText(ach, 600, achY);
+            achY += 35;
+        });
+
+        // Footer - adjusted positioning
+        ctx.textAlign = 'center';
+        ctx.fillStyle = 'rgba(255, 255, 255, 0.6)';
+        ctx.font = '16px Poppins, sans-serif';
+        ctx.fillText('Turma 4302 • Terceirão 2025 • IFPI', 600, 750);
+
+        ctx.fillStyle = '#ff8c00';
+        ctx.font = 'bold 18px Poppins, sans-serif';
+        ctx.fillText('🧡 Memórias que nunca serão deletadas 🧡', 600, 780);
+
+        // Download
+        const link = document.createElement('a');
+        link.download = `certificado-sobrevivente-${name.toLowerCase().replace(/\s+/g, '-')}.png`;
+        link.href = canvas.toDataURL('image/png');
+        link.click();
+    }
+
+    function roundRect(ctx, x, y, width, height, radius) {
+        ctx.beginPath();
+        ctx.moveTo(x + radius, y);
+        ctx.lineTo(x + width - radius, y);
+        ctx.quadraticCurveTo(x + width, y, x + width, y + radius);
+        ctx.lineTo(x + width, y + height - radius);
+        ctx.quadraticCurveTo(x + width, y + height, x + width - radius, y + height);
+        ctx.lineTo(x + radius, y + height);
+        ctx.quadraticCurveTo(x, y + height, x, y + height - radius);
+        ctx.lineTo(x, y + radius);
+        ctx.quadraticCurveTo(x, y, x + radius, y);
+        ctx.closePath();
+    }
+
+    // Close modals on outside click
+    [shareModal, printModal, printCardModal].forEach(modal => {
+        if (modal) {
+            modal.addEventListener('click', (e) => {
+                if (e.target === modal) {
+                    modal.classList.remove('active');
+                    document.body.style.overflow = 'auto';
+                }
+            });
+        }
+    });
+
+    // =========================================================================
+    // RANDOM MEMORY - SLOT MACHINE
+    // =========================================================================
+    const randomMemoryBtn = document.getElementById('random-memory-btn');
+    const randomMemoryModal = document.getElementById('random-memory-modal');
+    const randomMemoryClose = document.getElementById('random-memory-close');
+    const slotReel = document.getElementById('slot-reel');
+    const slotSpinBtn = document.getElementById('slot-spin-btn');
+    const nostalgicPhrase = document.getElementById('nostalgic-phrase');
+
+    const nostalgicPhrases = [
+        '🎓 Você se lembra deste momento?',
+        '📸 Que saudade dessa época!',
+        '💭 Os melhores anos...',
+        '🧡 Memória que nunca será deletada!',
+        '✨ Momentos que marcaram nossa história',
+        '🎉 Que dia foi esse, hein?',
+        '💻 A turma 4302 era demais!',
+        '☕ Quantas risadas nesse dia...',
+        '🔥 Momento épico desbloqueado!',
+        '📚 Tempos de informática...',
+        '🎵 Deu até saudade agora!',
+        '💫 Isso aqui é nostalgia pura!'
+    ];
+
+    let isSpinning = false;
+
+    function openRandomMemory() {
+        randomMemoryModal.classList.add('active');
+        document.body.style.overflow = 'hidden';
+        spinSlotMachine();
+    }
+
+    function closeRandomMemory() {
+        randomMemoryModal.classList.remove('active');
+        document.body.style.overflow = 'auto';
+    }
+
+    function getRandomMedia() {
+        const photos = state.media.filter(m => m.type === 'photo');
+        return photos[Math.floor(Math.random() * photos.length)];
+    }
+
+    function getRandomPhrase() {
+        return nostalgicPhrases[Math.floor(Math.random() * nostalgicPhrases.length)];
+    }
+
+    function spinSlotMachine() {
+        if (isSpinning) return;
+        isSpinning = true;
+        slotSpinBtn.disabled = true;
+        nostalgicPhrase.classList.remove('visible');
+
+        // Prepare multiple random images for spinning effect
+        slotReel.innerHTML = '';
+        const spinImages = [];
+        for (let i = 0; i < 15; i++) {
+            spinImages.push(getRandomMedia());
+        }
+
+        spinImages.forEach(media => {
+            const img = document.createElement('img');
+            img.src = media.src;
+            img.alt = 'Memória';
+            slotReel.appendChild(img);
+        });
+
+        // Start spinning animation
+        slotReel.classList.add('spinning');
+
+        let spinCount = 0;
+        const maxSpins = 20;
+        const spinInterval = 100;
+
+        const spin = setInterval(() => {
+            spinCount++;
+            // Shuffle the images during spin
+            if (spinCount % 3 === 0) {
+                const randomImg = slotReel.children[Math.floor(Math.random() * slotReel.children.length)];
+                if (randomImg) {
+                    slotReel.insertBefore(randomImg, slotReel.firstChild);
+                }
+            }
+
+            if (spinCount >= maxSpins) {
+                clearInterval(spin);
+                stopSlotMachine();
+            }
+        }, spinInterval);
+    }
+
+    function stopSlotMachine() {
+        slotReel.classList.remove('spinning');
+
+        // Show final random image
+        const finalMedia = getRandomMedia();
+        slotReel.innerHTML = '';
+        const finalImg = document.createElement('img');
+        finalImg.src = finalMedia.src;
+        finalImg.alt = 'Memória Aleatória';
+        slotReel.appendChild(finalImg);
+
+        // Show nostalgic phrase with delay
+        setTimeout(() => {
+            nostalgicPhrase.textContent = getRandomPhrase();
+            nostalgicPhrase.classList.add('visible');
+            isSpinning = false;
+            slotSpinBtn.disabled = false;
+        }, 300);
+    }
+
+    if (randomMemoryBtn) {
+        randomMemoryBtn.onclick = openRandomMemory;
+    }
+
+    if (randomMemoryClose) {
+        randomMemoryClose.onclick = closeRandomMemory;
+    }
+
+    if (slotSpinBtn) {
+        slotSpinBtn.onclick = spinSlotMachine;
+    }
+
+    if (randomMemoryModal) {
+        randomMemoryModal.addEventListener('click', (e) => {
+            if (e.target === randomMemoryModal) {
+                closeRandomMemory();
+            }
+        });
+    }
+
+    // =========================================================================
+    // MOSAIC
+    // =========================================================================
+    function initMosaic() {
+        const mosaicGrid = document.getElementById('mosaic-grid');
+        if (!mosaicGrid) return;
+
+        const photos = state.media.filter(m => m.type === 'photo');
+
+        // Fill the mosaic with photos (we need many to fill 12 columns x ~4 rows)
+        const neededPhotos = 48;
+        const shuffledPhotos = [...photos].sort(() => Math.random() - 0.5);
+
+        for (let i = 0; i < neededPhotos; i++) {
+            const photo = shuffledPhotos[i % shuffledPhotos.length];
+            const img = document.createElement('img');
+            img.src = photo.src;
+            img.alt = 'Memória';
+            img.loading = 'lazy';
+            mosaicGrid.appendChild(img);
+        }
+    }
+
+    // Mosaic Download
+    const downloadMosaicBtn = document.getElementById('download-mosaic-btn');
+    const mosaicContainer = document.getElementById('mosaic-container');
+
+    if (downloadMosaicBtn && mosaicContainer) {
+        downloadMosaicBtn.onclick = async () => {
+            downloadMosaicBtn.disabled = true;
+            downloadMosaicBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Gerando...';
+
+            try {
+                // Create canvas from mosaic
+                const canvas = document.createElement('canvas');
+                const ctx = canvas.getContext('2d');
+
+                const mosaicGrid = document.getElementById('mosaic-grid');
+                const images = mosaicGrid.querySelectorAll('img');
+                const cols = 12; // Number of columns in grid
+                const rows = Math.ceil(images.length / cols);
+                const imgSize = 150; // Size of each image in the mosaic
+
+                canvas.width = cols * imgSize;
+                canvas.height = rows * imgSize;
+
+                // Draw background
+                const bgGradient = ctx.createLinearGradient(0, 0, canvas.width, canvas.height);
+                bgGradient.addColorStop(0, '#1a1a2e');
+                bgGradient.addColorStop(1, '#16213e');
+                ctx.fillStyle = bgGradient;
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+                // Load and draw all images (centered crop for square)
+                const loadAndDrawImage = (src, destX, destY, destSize) => {
+                    return new Promise((resolve) => {
+                        const img = new Image();
+                        img.crossOrigin = 'anonymous';
+                        img.onload = () => {
+                            // Crop to center (cover behavior)
+                            const size = Math.min(img.width, img.height);
+                            const sx = (img.width - size) / 2;
+                            const sy = (img.height - size) / 2;
+                            ctx.drawImage(img, sx, sy, size, size, destX, destY, destSize, destSize);
+                            resolve(true);
+                        };
+                        img.onerror = () => resolve(false);
+                        img.src = src;
+                    });
+                };
+
+                let col = 0, row = 0;
+                for (const imgEl of images) {
+                    const destX = col * imgSize;
+                    const destY = row * imgSize;
+                    await loadAndDrawImage(imgEl.src, destX, destY, imgSize);
+                    col++;
+                    if (col >= cols) {
+                        col = 0;
+                        row++;
+                    }
+                }
+
+                // Add dark overlay on photos (like on the site)
+                ctx.fillStyle = 'rgba(0, 0, 0, 0.35)';
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+                // Draw "4302" text with gradient stroke (same style as site)
+                const textGradient = ctx.createLinearGradient(
+                    canvas.width / 2 - 500, 0,
+                    canvas.width / 2 + 500, 0
+                );
+                textGradient.addColorStop(0, '#ff8c00');
+                textGradient.addColorStop(0.5, '#ffa500');
+                textGradient.addColorStop(1, '#ff8c00');
+
+                ctx.font = 'bold 450px sans-serif';
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                ctx.strokeStyle = textGradient;
+                ctx.lineWidth = 5;
+
+                // Glow effect around the number only
+                ctx.shadowColor = '#ff8c00';
+                ctx.shadowBlur = 60;
+                ctx.shadowOffsetX = 0;
+                ctx.shadowOffsetY = 0;
+                ctx.strokeText('4302', canvas.width / 2, canvas.height / 2);
+                ctx.strokeText('4302', canvas.width / 2, canvas.height / 2);
+                ctx.shadowBlur = 0;
+
+                // Download
+                const link = document.createElement('a');
+                link.download = 'mosaico-4302.png';
+                link.href = canvas.toDataURL('image/png');
+                link.click();
+
+            } catch (error) {
+                console.error('Error generating mosaic:', error);
+                alert('Erro ao gerar mosaico. Tente novamente.');
+            }
+
+            downloadMosaicBtn.disabled = false;
+            downloadMosaicBtn.innerHTML = '<i class="fa-solid fa-download"></i> Baixar Mosaico';
+        };
+    }
+
+    // =========================================================================
+    // CREDITS
+    // =========================================================================
+    const creditsPlayBtn = document.getElementById('credits-play-btn');
+    const creditsWrapper = document.querySelector('.credits-wrapper');
+    const creditsCast = document.getElementById('credits-cast');
+
+    // Student names for credits - Turma 4302
+    const studentNames = [
+        'Ana Caroline Rodrigues Gualberto',
+        'Arthur Lucas Teixeira da Silva',
+        'Bernardo Coelho Leal',
+        'Carla Beatriz Duarte Cipriano',
+        'Dayane Alencar de Oliveira',
+        'Edson Mateus Gualberto Vaz',
+        'Fellipe Reis Silva',
+        'Francisco Pierre Holanda Santos',
+        'Isaac Freitas Medeiros Costa',
+        'João Hélio Cardoso de Sousa',
+        'Lucas Costa Santos',
+        'Luis Felipe de Oliveira Aragão',
+        'Luis Guilherme Martins Celestino',
+        'Maria Eduarda Alves Ferreira',
+        'Maria Fernanda Santos Carvalho',
+        'Maria Luiza Mousinho Tavares de Sousa',
+        'Marianny da Silva Pereira',
+        'Mayson de Sousa Silva',
+        'Michelli Bruna Santos Pinheiro',
+        'Milena Maria Pinheiro Leal',
+        'Pedro Henrique Sousa Saraiva',
+        'Pedro Lucas Ferreira Bosa',
+        'Rennan Martins Rocha',
+        'Tiago Antônio Freitas Targino',
+        'Vitória Vivia da Silva Sousa'
+    ];
+
+    function initCredits() {
+        if (!creditsCast) return;
+
+        studentNames.forEach(name => {
+            const span = document.createElement('span');
+            span.textContent = name;
+            creditsCast.appendChild(span);
+        });
+    }
+
+    if (creditsPlayBtn && creditsWrapper) {
+        creditsPlayBtn.onclick = () => {
+            creditsWrapper.classList.add('playing');
+            creditsPlayBtn.classList.add('hidden');
+
+            // Reset animation after it ends
+            setTimeout(() => {
+                creditsWrapper.classList.remove('playing');
+                creditsPlayBtn.classList.remove('hidden');
+            }, 47000); // 45s animation + 2s buffer
+        };
+    }
+
     // Init
     createParticles();
     loadMemories();
 
-    // Initialize carousel after media is loaded
-    setTimeout(initCarousel, 100);
+    // Initialize components after media is loaded
+    setTimeout(() => {
+        initCarousel();
+        initMosaic();
+        initCredits();
+    }, 100);
 });

@@ -15,6 +15,27 @@
 
 <body>
 
+    <!-- Loading Screen -->
+    <div class="loading-screen" id="loading-screen">
+        <div class="loading-content">
+            <div class="loading-logo">
+                <i class="fa-solid fa-code"></i>
+            </div>
+            <div class="loading-class-number">4302</div>
+            <h2 class="loading-title">Terceirão 2025</h2>
+            <p class="loading-subtitle">Técnico em Informática • IFPI</p>
+            <div class="loading-bar-container">
+                <div class="loading-bar" id="loading-bar"></div>
+            </div>
+            <p class="loading-text" id="loading-text">Inicializando...</p>
+            <div class="loading-dots">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </div>
+    </div>
+
     <!-- Floating Particles Background -->
     <div class="particles" id="particles"></div>
 
@@ -120,7 +141,115 @@
             <div class="gallery-grid" id="gallery-grid">
                 <!-- Items will be injected here via JS -->
             </div>
+            <div class="gallery-pagination" id="gallery-pagination">
+                <button class="pagination-btn" id="prev-page" disabled>
+                    <i class="fa-solid fa-chevron-left"></i> Anterior
+                </button>
+                <span class="pagination-info" id="pagination-info">Página 1 de 1</span>
+                <button class="pagination-btn" id="next-page">
+                    Próximo <i class="fa-solid fa-chevron-right"></i>
+                </button>
+            </div>
         </div>
+    </section>
+
+    <!-- Lightbox Modal -->
+    <div id="lightbox" class="lightbox">
+        <button class="close-lightbox" aria-label="Fechar"><i class="fa-solid fa-xmark"></i></button>
+        <button class="nav-btn prev-btn" aria-label="Anterior"><i class="fa-solid fa-chevron-left"></i></button>
+        <div class="lightbox-content">
+            <img id="lightbox-img" src="" alt="Zoom" class="hidden">
+            <video id="lightbox-video" controls class="hidden"></video>
+        </div>
+        <button class="nav-btn next-btn" aria-label="Próximo"><i class="fa-solid fa-chevron-right"></i></button>
+    </div>
+
+    <!-- Mosaic Section -->
+    <section class="mosaic-section" id="mosaic">
+        <div class="container">
+            <div class="section-header">
+                <h2 class="section-title"><i class="fa-solid fa-grip"></i> Mosaico 4302</h2>
+                <p class="section-subtitle">Todas as nossas memórias juntas formam algo maior</p>
+            </div>
+            <div class="mosaic-container" id="mosaic-container">
+                <div class="mosaic-number">4302</div>
+                <div class="mosaic-grid" id="mosaic-grid">
+                    <!-- Photos will be inserted dynamically -->
+                </div>
+                <div class="mosaic-overlay"></div>
+            </div>
+            <p class="mosaic-caption">🧡 Cada foto é uma peça dessa história incrível</p>
+            <button class="action-btn mosaic-download-btn" id="download-mosaic-btn">
+                <i class="fa-solid fa-download"></i>
+                Baixar Mosaico
+            </button>
+        </div>
+    </section>
+
+    <!-- Final Credits Section -->
+    <section class="credits-section" id="credits">
+        <div class="credits-wrapper">
+            <div class="credits-scroll" id="credits-scroll">
+                <!-- Intro -->
+                <div class="credits-intro">
+                    <p class="credits-presents">TURMA 4302 APRESENTA</p>
+                    <h1 class="credits-main-title">TERCEIRÃO 2025</h1>
+                    <p class="credits-subtitle">Uma produção de 3 anos</p>
+                </div>
+
+                <!-- Special Cast -->
+                <div class="credits-block">
+                    <h3 class="credits-category">✨ ELENCO ESPECIAL ✨</h3>
+                    <div class="credits-names" id="credits-cast">
+                        <!-- Names will be inserted dynamically -->
+                    </div>
+                </div>
+
+                <!-- Direction -->
+                <div class="credits-block">
+                    <h3 class="credits-category">🎬 DIREÇÃO</h3>
+                    <p class="credits-role">Professores que moldaram nosso caminho</p>
+                    <div class="credits-names">
+                        <span>Todos os professores do IFPI</span>
+                        <span>Que acreditaram em nós</span>
+                    </div>
+                </div>
+
+                <!-- Production -->
+                <div class="credits-block">
+                    <h3 class="credits-category">🎥 PRODUÇÃO</h3>
+                    <div class="credits-names">
+                        <span>Técnico em Informática</span>
+                        <span>IFPI - Instituto Federal do Piauí</span>
+                    </div>
+                </div>
+
+                <!-- Special Thanks -->
+                <div class="credits-block">
+                    <h3 class="credits-category">💝 AGRADECIMENTOS ESPECIAIS</h3>
+                    <div class="credits-names">
+                        <span>Nossas famílias</span>
+                        <span>Amigos de todas as horas</span>
+                        <span>Cantina por nos alimentar</span>
+                        <span>Wi-Fi por (às vezes) funcionar</span>
+                        <span>Café por nos manter acordados</span>
+                    </div>
+                </div>
+
+                <!-- Final Message -->
+                <div class="credits-final">
+                    <div class="credits-year">2023 - 2025</div>
+                    <h2 class="credits-thanks">Obrigado por esses 3 anos incríveis!</h2>
+                    <p class="credits-memory">Memórias que nunca serão deletadas</p>
+                    <div class="credits-heart">🧡</div>
+                    <p class="credits-class">TURMA 4302</p>
+                </div>
+            </div>
+        </div>
+        <button class="credits-play-btn" id="credits-play-btn">
+            <i class="fa-solid fa-play"></i>
+            <span>Assistir Créditos</span>
+        </button>
     </section>
 
     <!-- Messages Section -->
@@ -159,25 +288,189 @@
         </div>
     </section>
 
-    <!-- Lightbox Modal -->
-    <div id="lightbox" class="lightbox">
-        <button class="close-lightbox" aria-label="Fechar"><i class="fa-solid fa-xmark"></i></button>
-        <button class="nav-btn prev-btn" aria-label="Anterior"><i class="fa-solid fa-chevron-left"></i></button>
-        <div class="lightbox-content">
-            <img id="lightbox-img" src="" alt="Zoom" class="hidden">
-            <video id="lightbox-video" controls class="hidden"></video>
-        </div>
-        <button class="nav-btn next-btn" aria-label="Próximo"><i class="fa-solid fa-chevron-right"></i></button>
-    </div>
-
     <!-- Footer -->
-    <footer>
-        <div class="footer-content">
-            <p><i class="fa-solid fa-code"></i> Desenvolvido com <span class="heart">🧡</span> pela Turma de Informática
-                2025</p>
-            <p class="footer-sub">Memórias que nunca serão deletadas</p>
+    <footer class="site-footer">
+        <div class="footer-container">
+            <div class="footer-main">
+                <div class="footer-logo">
+                    <span class="footer-number">4302</span>
+                    <span class="footer-course">Técnico em Informática</span>
+                </div>
+                <p class="footer-quote">"Memórias que nunca serão deletadas"</p>
+            </div>
+            <div class="footer-info">
+                <p class="footer-institution">
+                    <i class="fa-solid fa-school"></i> IFPI - Instituto Federal do Piauí
+                </p>
+                <p class="footer-years">
+                    <i class="fa-solid fa-calendar"></i> 2023 - 2025
+                </p>
+            </div>
+            <div class="footer-bottom">
+                <p><i class="fa-solid fa-code"></i> Desenvolvido com <span class="heart">🧡</span> pela Turma 4302</p>
+                <p class="footer-credits">Terceirão 2025 • Despedida de Formatura</p>
+            </div>
         </div>
     </footer>
+
+    <!-- Random Memory Button -->
+    <button class="random-memory-btn" id="random-memory-btn" aria-label="Memória Aleatória">
+        <i class="fa-solid fa-dice"></i>
+        <span class="random-memory-text">Memória</span>
+    </button>
+
+    <!-- Random Memory Modal -->
+    <div class="random-memory-modal" id="random-memory-modal">
+        <div class="random-memory-content">
+            <button class="random-memory-close" id="random-memory-close">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+
+            <div class="slot-machine">
+                <div class="slot-header">
+                    <i class="fa-solid fa-dice"></i>
+                    <span>Memória Aleatória</span>
+                </div>
+
+                <div class="slot-window" id="slot-window">
+                    <div class="slot-reel" id="slot-reel">
+                        <!-- Images will be inserted here dynamically -->
+                    </div>
+                </div>
+
+                <div class="slot-result" id="slot-result">
+                    <p class="nostalgic-phrase" id="nostalgic-phrase">Você se lembra deste momento?</p>
+                </div>
+
+                <button class="slot-spin-btn" id="slot-spin-btn">
+                    <i class="fa-solid fa-rotate"></i>
+                    Girar Novamente
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Share Button -->
+    <button class="share-btn" id="share-btn" aria-label="Compartilhar">
+        <i class="fa-solid fa-share-nodes"></i>
+    </button>
+
+    <!-- Share Modal -->
+    <div class="share-modal" id="share-modal">
+        <div class="share-modal-content">
+            <button class="share-modal-close" id="share-modal-close">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+            <h2 class="share-modal-title"><i class="fa-solid fa-share-nodes"></i> Compartilhar</h2>
+
+            <!-- Social Share -->
+            <div class="share-section">
+                <h3 class="share-section-title">Compartilhe nas Redes Sociais</h3>
+                <div class="social-share-grid">
+                    <button class="social-btn whatsapp" id="share-whatsapp">
+                        <i class="fa-brands fa-whatsapp"></i>
+                        <span>WhatsApp</span>
+                    </button>
+                    <button class="social-btn instagram" id="share-instagram">
+                        <i class="fa-brands fa-instagram"></i>
+                        <span>Instagram</span>
+                    </button>
+                    <button class="social-btn twitter" id="share-twitter">
+                        <i class="fa-brands fa-x-twitter"></i>
+                        <span>Twitter/X</span>
+                    </button>
+                    <button class="social-btn facebook" id="share-facebook">
+                        <i class="fa-brands fa-facebook"></i>
+                        <span>Facebook</span>
+                    </button>
+                    <button class="social-btn copy-link" id="share-copy">
+                        <i class="fa-solid fa-link"></i>
+                        <span>Copiar Link</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Personalized Print -->
+            <div class="share-section">
+                <h3 class="share-section-title">Print Personalizado</h3>
+                <p class="share-section-desc">Escolha sua foto favorita da galeria e gere um card personalizado!</p>
+                <button class="action-btn" id="generate-print-btn">
+                    <i class="fa-solid fa-image"></i>
+                    Gerar Print com Minha Foto
+                </button>
+            </div>
+
+            <!-- Certificate Download -->
+            <div class="share-section">
+                <h3 class="share-section-title">Certificado de Sobrevivente</h3>
+                <p class="share-section-desc">Baixe seu certificado exclusivo! Você conquistou isso. 🎓</p>
+                <div class="certificate-form">
+                    <input type="text" id="certificate-name" class="certificate-input"
+                        placeholder="Digite seu nome completo">
+                    <button class="action-btn certificate-btn" id="download-certificate-btn">
+                        <i class="fa-solid fa-award"></i>
+                        Baixar Certificado
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Print Preview Modal -->
+    <div class="print-modal" id="print-modal">
+        <div class="print-modal-content">
+            <button class="print-modal-close" id="print-modal-close">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+            <h2 class="share-modal-title"><i class="fa-solid fa-image"></i> Escolha sua Foto</h2>
+            <div class="print-gallery" id="print-gallery">
+                <!-- Photos will be injected here -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Print Card Preview -->
+    <div class="print-card-modal" id="print-card-modal">
+        <div class="print-card-container">
+            <button class="print-modal-close" id="print-card-close">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+            <div class="print-card" id="print-card">
+                <div class="print-card-bg-circle top"></div>
+                <div class="print-card-bg-circle bottom"></div>
+                <div class="print-card-header">
+                    <span class="print-card-badge">💻 Técnico em Informática</span>
+                    <h3>TERCEIRÃO<br>2025</h3>
+                </div>
+                <div class="print-card-photo" id="print-card-photo">
+                    <img src="" alt="Memória">
+                </div>
+                <div class="print-card-footer">
+                    <p class="quote">🎓 "Memórias que nunca<br>serão deletadas" 💻</p>
+                    <span class="print-card-class">Turma 4302</span>
+                    <span class="print-card-year">IFPI • 2023 - 2025</span>
+                    <span class="print-card-heart">🧡</span>
+                    <span class="print-card-watermark">despedida-terceirao-2025</span>
+                </div>
+            </div>
+            <button class="action-btn download-print-btn" id="download-print-btn">
+                <i class="fa-solid fa-download"></i>
+                Baixar Print
+            </button>
+        </div>
+    </div>
+
+    <!-- Certificate Canvas (hidden) -->
+    <canvas id="certificate-canvas" width="1200" height="850" style="display: none;"></canvas>
+    <canvas id="print-canvas" width="1080" height="1920" style="display: none;"></canvas>
+
+    <!-- Party Mode Button & Effects -->
+    <button class="party-mode-btn" id="party-mode-btn" aria-label="Ativar modo festa">
+        <i class="fa-solid fa-champagne-glasses"></i>
+        <span class="party-mode-text">Festa!</span>
+    </button>
+    <div class="confetti-container" id="confetti-container"></div>
+    <div class="fireworks-container" id="fireworks-container"></div>
 
     <script src="script.js"></script>
 </body>
