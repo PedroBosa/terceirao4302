@@ -896,6 +896,127 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
+    // =========================================================================
+    // MOBILE-COMPATIBLE DOWNLOAD HELPER
+    // =========================================================================
+    function downloadCanvasImage(canvas, filename) {
+        return new Promise((resolve, reject) => {
+            try {
+                // Method 1: Try Blob download (works better on mobile)
+                canvas.toBlob((blob) => {
+                    if (!blob) {
+                        // Fallback to dataURL method
+                        fallbackDownload();
+                        return;
+                    }
+
+                    const url = URL.createObjectURL(blob);
+
+                    // Check if we're on iOS
+                    const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
+                    const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
+
+                    if (isIOS || isSafari) {
+                        // For iOS/Safari: Open in new tab for user to save manually
+                        const newWindow = window.open(url, '_blank');
+                        if (newWindow) {
+                            setTimeout(() => {
+                                alert('📱 Imagem aberta em nova aba!\n\nPara salvar:\n• Toque e segure na imagem\n• Selecione "Salvar Imagem"');
+                                URL.revokeObjectURL(url);
+                                resolve(true);
+                            }, 100);
+                        } else {
+                            // Popup blocked, try alternative
+                            createDownloadModal(url, filename);
+                            resolve(true);
+                        }
+                    } else {
+                        // For other browsers: Use standard download
+                        const link = document.createElement('a');
+                        link.download = filename;
+                        link.href = url;
+                        link.style.display = 'none';
+                        document.body.appendChild(link);
+                        link.click();
+
+                        setTimeout(() => {
+                            document.body.removeChild(link);
+                            URL.revokeObjectURL(url);
+                            resolve(true);
+                        }, 100);
+                    }
+                }, 'image/png', 1.0);
+
+                function fallbackDownload() {
+                    try {
+                        const dataUrl = canvas.toDataURL('image/png');
+                        const link = document.createElement('a');
+                        link.download = filename;
+                        link.href = dataUrl;
+                        link.click();
+                        resolve(true);
+                    } catch (e) {
+                        reject(e);
+                    }
+                }
+            } catch (error) {
+                reject(error);
+            }
+        });
+    }
+
+    // Create modal for download on iOS/Safari when popup is blocked
+    function createDownloadModal(imageUrl, filename) {
+        const modal = document.createElement('div');
+        modal.style.cssText = `
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.9);
+            z-index: 10000;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            box-sizing: border-box;
+        `;
+
+        modal.innerHTML = `
+            <p style="color: white; text-align: center; margin-bottom: 20px; font-size: 16px;">
+                📱 Toque e segure na imagem para salvar
+            </p>
+            <img src="${imageUrl}" style="max-width: 90%; max-height: 70vh; border-radius: 12px; object-fit: contain;" alt="${filename}">
+            <button style="
+                margin-top: 20px;
+                padding: 15px 40px;
+                background: linear-gradient(135deg, #ff6b35, #ff8c00);
+                border: none;
+                border-radius: 30px;
+                color: white;
+                font-size: 16px;
+                font-weight: bold;
+                cursor: pointer;
+            ">Fechar</button>
+        `;
+
+        document.body.appendChild(modal);
+
+        modal.querySelector('button').onclick = () => {
+            document.body.removeChild(modal);
+            URL.revokeObjectURL(imageUrl);
+        };
+
+        modal.onclick = (e) => {
+            if (e.target === modal) {
+                document.body.removeChild(modal);
+                URL.revokeObjectURL(imageUrl);
+            }
+        };
+    }
+
     // Download Print - Instagram Story Format (1080x1920)
     document.getElementById('download-print-btn')?.addEventListener('click', () => {
         const canvas = document.getElementById('print-canvas');
@@ -1060,11 +1181,12 @@ document.addEventListener('DOMContentLoaded', () => {
             ctx.font = '18px Poppins, sans-serif';
             ctx.fillText('despedida-terceirao-2025', w / 2, h - 40);
 
-            // Download
-            const link = document.createElement('a');
-            link.download = 'story-terceirao-2025.png';
-            link.href = canvas.toDataURL('image/png');
-            link.click();
+            // Download using mobile-compatible helper
+            downloadCanvasImage(canvas, 'story-terceirao-2025.png')
+                .catch(err => {
+                    console.error('Download error:', err);
+                    alert('Erro ao baixar. Tente novamente.');
+                });
         };
         tempImg.src = img.src;
     });
@@ -1196,11 +1318,12 @@ document.addEventListener('DOMContentLoaded', () => {
         ctx.font = 'bold 18px Poppins, sans-serif';
         ctx.fillText('🧡 Memórias que nunca serão deletadas 🧡', 600, 780);
 
-        // Download
-        const link = document.createElement('a');
-        link.download = `certificado-sobrevivente-${name.toLowerCase().replace(/\s+/g, '-')}.png`;
-        link.href = canvas.toDataURL('image/png');
-        link.click();
+        // Download using mobile-compatible helper
+        downloadCanvasImage(canvas, `certificado-sobrevivente-${name.toLowerCase().replace(/\s+/g, '-')}.png`)
+            .catch(err => {
+                console.error('Download error:', err);
+                alert('Erro ao baixar. Tente novamente.');
+            });
     }
 
     function roundRect(ctx, x, y, width, height, radius) {
@@ -1471,11 +1594,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 ctx.strokeText('4302', canvas.width / 2, canvas.height / 2);
                 ctx.shadowBlur = 0;
 
-                // Download
-                const link = document.createElement('a');
-                link.download = 'mosaico-4302.png';
-                link.href = canvas.toDataURL('image/png');
-                link.click();
+                // Download using mobile-compatible helper
+                await downloadCanvasImage(canvas, 'mosaico-4302.png');
 
             } catch (error) {
                 console.error('Error generating mosaic:', error);
